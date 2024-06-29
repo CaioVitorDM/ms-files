@@ -14,6 +14,8 @@ import ufrn.imd.br.msfileserver.model.File;
 import ufrn.imd.br.msfileserver.repository.FileRepository;
 import ufrn.imd.br.msfileserver.utils.exception.ResourceNotFoundException;
 
+import java.util.Optional;
+
 
 @Service
 @Transactional
@@ -66,7 +68,9 @@ public class FileService {
         return new PageImpl<>(fileMapper.toDto(entityPage.getContent()), pageable, entityPage.getTotalElements());
     }
 
-    public boolean existsById(Long patientId) {
-        return repository.existsById(patientId);
+    public boolean existsById(Long id) {
+        return repository.existsById(id);
     }
+    
+
 }
