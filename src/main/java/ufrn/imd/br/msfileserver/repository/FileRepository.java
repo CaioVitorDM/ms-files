@@ -5,4 +5,6 @@ import ufrn.imd.br.msfileserver.model.File;
 
 @Repository
 public interface FileRepository extends GenericRepository<File> {
+
+    boolean existsById(Long id);
 }

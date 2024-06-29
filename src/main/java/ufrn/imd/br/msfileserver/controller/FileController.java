@@ -95,8 +95,20 @@ public class FileController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        contentDisposition + "; filename=\"" + response.resource().getFilename())
+                        contentDisposition + "; filename=\"" + response.resource().getFilename() + "\"")
                 .body(response.resource());
+    }
+
+    @GetMapping("/check/{id}")
+    public ResponseEntity<ApiResponseDTO<Boolean>> isValidDoctor(@PathVariable Long id) {
+        boolean exists = fileService.existsById(id);
+        ApiResponseDTO<Boolean> response = new ApiResponseDTO<>(
+                true,
+                exists ? "File exists." : "File does not exist.",
+                exists,
+                null
+        );
+        return ResponseEntity.ok(response);
     }
 
 }

@@ -65,4 +65,8 @@ public class FileService {
         var entityPage = repository.findAll(pageable);
         return new PageImpl<>(fileMapper.toDto(entityPage.getContent()), pageable, entityPage.getTotalElements());
     }
+
+    public boolean existsById(Long patientId) {
+        return repository.existsById(patientId);
+    }
 }
