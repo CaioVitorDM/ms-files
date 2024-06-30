@@ -71,6 +71,20 @@ public class FileService {
     public boolean existsById(Long id) {
         return repository.existsById(id);
     }
-    
+
+    public FileResponseDTO uploadWithVerification(FileUploadDTO dto, Long existingFileId) {
+
+        if(existingFileId == null) {
+            return upload(dto);
+        }
+
+        Optional<File> existingFile = repository.findById(existingFileId);
+
+        if (existingFile.isPresent() && existingFile.get().getName().equals(dto.file().getOriginalFilename())) {
+            return new FileResponseDTO(existingFile.get().getId(), existingFile.get().getName());
+        } else {
+            return upload(dto);
+        }
+    }
 
 }
