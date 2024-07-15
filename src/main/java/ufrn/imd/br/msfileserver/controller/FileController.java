@@ -43,15 +43,18 @@ public class FileController {
 
     @PostMapping(value = "/upload", consumes = { "multipart/form-data" })
     public ResponseEntity<ApiResponseDTO<FileResponseDTO>> upload(
-            @Valid @ModelAttribute FileUploadDTO dto){
+            @Valid @ModelAttribute FileUploadDTO dto,
+            @RequestParam(required = false) Long existingFileId) {
 
+        FileResponseDTO fileResponse = fileService.uploadWithVerification(dto, existingFileId);
         return ResponseEntity.ok(new ApiResponseDTO<>(
                 true,
-                "Sucess: file uploaded successfully",
-                fileService.upload(dto),
+                "Success: file uploaded successfully",
+                fileResponse,
                 null
         ));
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Resource> inlineFile(@PathVariable Long id, HttpServletRequest request){
@@ -95,8 +98,37 @@ public class FileController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        contentDisposition + "; filename=\"" + response.resource().getFilename())
+                        contentDisposition + "; filename=\"" + response.resource().getFilename() + "\"")
                 .body(response.resource());
     }
+
+    @GetMapping("/check/{id}")
+    public ResponseEntity<ApiResponseDTO<Boolean>> isValidFile(@PathVariable Long id) {
+        boolean exists = fileService.existsById(id);
+        ApiResponseDTO<Boolean> response = new ApiResponseDTO<>(
+                true,
+                exists ? "File exists." : "File does not exist.",
+                exists,
+                null
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(value = "/upload-check", consumes = { "multipart/form-data" })
+    public ResponseEntity<ApiResponseDTO<FileResponseDTO>> uploadWithVerification(
+            @Valid @ModelAttribute FileUploadDTO dto,
+            @RequestParam(required = false) Long existingFileId) {
+        FileResponseDTO fileResponse = fileService.uploadWithVerification(dto, existingFileId);
+        return ResponseEntity.ok(new ApiResponseDTO<>(
+                true,
+                "Success: file uploaded successfully",
+                fileResponse,
+                null
+        ));
+    }
+
+
+
+
 
 }

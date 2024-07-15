@@ -14,6 +14,8 @@ import ufrn.imd.br.msfileserver.model.File;
 import ufrn.imd.br.msfileserver.repository.FileRepository;
 import ufrn.imd.br.msfileserver.utils.exception.ResourceNotFoundException;
 
+import java.util.Optional;
+
 
 @Service
 @Transactional
@@ -65,4 +67,24 @@ public class FileService {
         var entityPage = repository.findAll(pageable);
         return new PageImpl<>(fileMapper.toDto(entityPage.getContent()), pageable, entityPage.getTotalElements());
     }
+
+    public boolean existsById(Long id) {
+        return repository.existsById(id);
+    }
+
+    public FileResponseDTO uploadWithVerification(FileUploadDTO dto, Long existingFileId) {
+
+        if(existingFileId == null) {
+            return upload(dto);
+        }
+
+        Optional<File> existingFile = repository.findById(existingFileId);
+
+        if (existingFile.isPresent() && existingFile.get().getName().equals(dto.file().getOriginalFilename())) {
+            return new FileResponseDTO(existingFile.get().getId(), existingFile.get().getName());
+        } else {
+            return upload(dto);
+        }
+    }
+
 }
